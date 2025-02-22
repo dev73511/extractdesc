@@ -3,8 +3,6 @@
 import { NextResponse } from "next/server";
 const puppeteer = require("puppeteer");
 const puppeteerCore = require("puppeteer-core");
-const chromium = require("@sparticuz/chromium");
-
 const isDev = process.env.NODE_ENV === "development";
 
 export async function POST(request) {
@@ -14,11 +12,9 @@ export async function POST(request) {
     if(isDev){
       browser = await puppeteer.launch({ headless: true });
     }else{
-      browser = await puppeteerCore.launch({
-        args: chromium.args,
-        executablePath: await chromium.executablePath,
-        headless: chromium.headless,
-      });
+      browser = await puppeteerCore.connect({
+        browserWSEndpoint: `wss://production-sfo.browserless.io/chromium?token=${process.env.BLESS_TOKEN}`,
+      })
     }
 
     // Parse the request body

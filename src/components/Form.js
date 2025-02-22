@@ -18,7 +18,6 @@ const Form = () => {
 
     const handleInput = (e) => {
         let value = e?.target?.value;
-        console.log("Value :", value);
         setInputValue(value)
     } 
 
