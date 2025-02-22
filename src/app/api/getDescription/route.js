@@ -2,9 +2,25 @@
 
 import { NextResponse } from "next/server";
 const puppeteer = require("puppeteer");
+const puppeteerCore = require("puppeteer-core");
+const chromium = require("@sparticuz/chromium");
+
+const isDev = process.env.NODE_ENV === "development";
 
 export async function POST(request) {
+  let browser = null;
+
   try {
+    if(isDev){
+      browser = await puppeteer.launch({ headless: true });
+    }else{
+      browser = await puppeteerCore.launch({
+        args: chromium.args,
+        executablePath: await chromium.executablePath,
+        headless: chromium.headless,
+      });
+    }
+
     // Parse the request body
     const {data} = await request.json();
     const { url } = data
@@ -17,7 +33,6 @@ export async function POST(request) {
     // const mockCaption = `Mock caption extracted from: ${url}`;
     // return NextResponse.json({ data: mockCaption }, { status: 200 });
 
-    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
 
     await page.goto(url, { waitUntil: "networkidle2" });
